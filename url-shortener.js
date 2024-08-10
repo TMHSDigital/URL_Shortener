@@ -1,6 +1,3 @@
-// Load existing URLs from localStorage
-let urls = JSON.parse(localStorage.getItem('shortUrls')) || {};
-
 function shortenUrl() {
     const longUrl = document.getElementById('longUrl').value;
     if (!longUrl) {
@@ -11,8 +8,7 @@ function shortenUrl() {
     const shortCode = generateShortCode();
     const shortUrl = `${window.location.origin}?${shortCode}`;
 
-    urls[shortCode] = longUrl;
-    localStorage.setItem('shortUrls', JSON.stringify(urls));
+    StorageManager.addUrl(shortCode, longUrl);
 
     displayResult(shortUrl);
     displayUrlList();
@@ -33,6 +29,7 @@ function displayResult(shortUrl) {
 function displayUrlList() {
     const urlListDiv = document.getElementById('urlList');
     urlListDiv.innerHTML = '<h2>Your Shortened URLs:</h2>';
+    const urls = StorageManager.getAllUrls();
     for (const [shortCode, longUrl] of Object.entries(urls)) {
         const shortUrl = `${window.location.origin}?${shortCode}`;
         urlListDiv.innerHTML += `
@@ -45,8 +42,7 @@ function displayUrlList() {
 }
 
 function deleteUrl(shortCode) {
-    delete urls[shortCode];
-    localStorage.setItem('shortUrls', JSON.stringify(urls));
+    StorageManager.deleteUrl(shortCode);
     displayUrlList();
 }
 
@@ -54,7 +50,7 @@ function deleteUrl(shortCode) {
 (function() {
     const shortCode = window.location.search.slice(1);
     if (shortCode) {
-        const longUrl = urls[shortCode];
+        const longUrl = StorageManager.getUrl(shortCode);
         if (longUrl) {
             window.location.href = longUrl;
         } else {
