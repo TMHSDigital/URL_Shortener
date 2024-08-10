@@ -1,52 +1,72 @@
-function shortenUrl() {
-    const longUrl = document.getElementById('longUrl').value;
-    if (!longUrl) {
-        alert('Please enter a URL');
-        return;
+class UrlShortener {
+    constructor() {
+        this.appElement = document.getElementById('app');
+        this.render();
+        this.addEventListeners();
     }
 
-    const shortCode = generateShortCode();
-    const shortUrl = `${window.location.origin}?${shortCode}`;
+    render() {
+        this.appElement.innerHTML = Components.urlShortener + Components.urlList;
+        this.displayUrlList();
+    }
 
-    StorageManager.addUrl(shortCode, longUrl);
+    addEventListeners() {
+        document.getElementById('shortenButton').addEventListener('click', () => this.shortenUrl());
+        document.getElementById('urlListItems').addEventListener('click', (e) => {
+            if (e.target.classList.contains('deleteButton')) {
+                this.deleteUrl(e.target.dataset.shortcode);
+            }
+        });
+    }
 
-    displayResult(shortUrl);
-    displayUrlList();
-}
+    shortenUrl() {
+        const longUrl = document.getElementById('longUrl').value;
+        if (!longUrl) {
+            alert('Please enter a URL');
+            return;
+        }
 
-function generateShortCode() {
-    return Math.random().toString(36).substring(2, 8);
-}
-
-function displayResult(shortUrl) {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `
-        <p>Shortened URL:</p>
-        <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-    `;
-}
-
-function displayUrlList() {
-    const urlListDiv = document.getElementById('urlList');
-    urlListDiv.innerHTML = '<h2>Your Shortened URLs:</h2>';
-    const urls = StorageManager.getAllUrls();
-    for (const [shortCode, longUrl] of Object.entries(urls)) {
+        const shortCode = this.generateShortCode();
         const shortUrl = `${window.location.origin}?${shortCode}`;
-        urlListDiv.innerHTML += `
-            <p>
-                <a href="${shortUrl}" target="_blank">${shortUrl}</a> -> ${longUrl}
-                <button onclick="deleteUrl('${shortCode}')">Delete</button>
-            </p>
+
+        StorageManager.addUrl(shortCode, longUrl);
+
+        this.displayResult(shortUrl);
+        this.displayUrlList();
+    }
+
+    generateShortCode() {
+        return Math.random().toString(36).substring(2, 8);
+    }
+
+    displayResult(shortUrl) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+            <p>Shortened URL:</p>
+            <a href="${shortUrl}" target="_blank">${shortUrl}</a>
         `;
     }
+
+    displayUrlList() {
+        const urlListItems = document.getElementById('urlListItems');
+        urlListItems.innerHTML = '';
+        const urls = StorageManager.getAllUrls();
+        for (const [shortCode, longUrl] of Object.entries(urls)) {
+            const shortUrl = `${window.location.origin}?${shortCode}`;
+            urlListItems.innerHTML += Components.urlListItem(shortUrl, longUrl, shortCode);
+        }
+    }
+
+    deleteUrl(shortCode) {
+        StorageManager.deleteUrl(shortCode);
+        this.displayUrlList();
+    }
 }
 
-function deleteUrl(shortCode) {
-    StorageManager.deleteUrl(shortCode);
-    displayUrlList();
-}
+// Initialize the app
+const app = new UrlShortener();
 
-// Check if this is a shortened URL and redirect if necessary
+// Handle URL redirects
 (function() {
     const shortCode = window.location.search.slice(1);
     if (shortCode) {
@@ -56,7 +76,5 @@ function deleteUrl(shortCode) {
         } else {
             alert('Short URL not found');
         }
-    } else {
-        displayUrlList();
     }
 })();
