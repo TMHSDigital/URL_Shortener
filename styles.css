@@ -1,21 +1,12 @@
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-}
-
 .container {
     background-color: white;
-    padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    color: var(--text-color);
+    color: var(--primary-color);
 }
 
 #shortenUrl {
@@ -23,7 +14,7 @@ h1 {
     margin-bottom: 1rem;
 }
 
-input {
+#longUrl {
     flex-grow: 1;
     padding: 0.5rem;
     font-size: 1rem;
@@ -31,7 +22,7 @@ input {
     border-radius: 4px 0 0 4px;
 }
 
-button {
+#shortenButton {
     padding: 0.5rem 1rem;
     font-size: 1rem;
     background-color: var(--primary-color);
@@ -42,9 +33,41 @@ button {
 
 #result {
     margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--success-color);
+    color: white;
+    border-radius: 4px;
     text-align: center;
+}
+
+#result a {
+    color: white;
+    text-decoration: underline;
 }
 
 #urlList {
     margin-top: 2rem;
+}
+
+#urlListItems {
+    list-style-type: none;
+}
+
+#urlListItems li {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deleteButton {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
 }
